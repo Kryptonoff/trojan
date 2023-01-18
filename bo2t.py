@@ -1,15 +1,21 @@
-import telebot
-bot = telebot.TeleBot('%5747207857:AAH0F8fGDmXFfmGAkA7A-lKXhVhoS_elAc8%')
+from aiogram import Bot, types
+from aiogram.dispatcher import Dispatcher
+from aiogram.utils import executor
+TOKEN = "5747207857:AAH0F8fGDmXFfmGAkA7A-lKXhVhoS_elAc8"
+bot = Bot(token=TOKEN)
+dp = Dispatcher(bot)
 
+@dp.message_handler(commands=['start', 'help'])
+async def send_welcome(msg: types.Message):
+    await msg.reply_to_message(f‘Я бот. Приятно познакомиться,
+                               {msg.from_user.first_name}’)
 
-@bot.message_handler(content_types=['text'])
-def get_text_messages(message):
-    @bot.message_handler(content_types=['text', 'document', 'audio'])
-    if message.text == "Привет":
-        bot.send_message(message.from_user.id, "Привет, чем я могу тебе помочь?")
-    elif message.text == "/help":
-        bot.send_message(message.from_user.id, "Напиши привет")
-    else:
-        bot.send_message(message.from_user.id, "Я тебя не понимаю. Напиши /help.")
-        
-bot.polling(none_stop=True, interval=0)
+@dp.message_handler(content_types=['text'])
+async def get_text_messages(msg: types.Message):
+   if msg.text.lower() == 'привет':
+       await msg.answer('Привет!')
+   else:
+       await msg.answer('Не понимаю, что это значит.')
+
+if __name__ == '__main__':
+   executor.start_polling(dp)
